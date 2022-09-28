@@ -1,0 +1,49 @@
+25.07.2022
+Segmentasyondan Panoramik üretmeyi bildiri yapalım.
+Motivasyon: Ağız taramasından panoramik üretmek, panoramik processing için veri arttırımı olabilir.
+GAUGAN kullanarak. GAUGAN with attention.
+Evaluasyon metrikleri neler olabilir?
+
+
+
+27.07.2022
+https://geomedia-workshop.github.io/ workshopa bildiri hazırlayalım.
+Gürültüden diş modelini PointCloud, LevelSet, BinaryMap veya Mesh/Graph temsillerinde oluşturmak.
+Burhan STL'den farklı temsilleri oluşturabilir mi?
+Benzer bir ağ modeli Farklı temsiller için kullanılabilir mi? Yoksa farklı temsiller için farklı ağ yapıları mı gerekir?
+Deadline : 28.08.2022
+
+
+
+28.07.2022
+
+Eval _ Metrics :
+The Learned Perceptual Image Patch Similarity -
+Fréchet Inception Distance
+
+
+Metricde etiketsiz kısımları evaluasyon etmeye gerek yok. Çünkü hedefden bağımsız. Rastgeleliği amaca hizmet etmiyor. Bu yüzden etiketlenmedi.
+
+1.9.2022
+Dergi Seçimi:
+-IEEE Biomedical and Health Informatics
+-Imaging Science in Dentistry
+-Medical Physics
+-Computers in Biology and Medicine
+
+Data Splitting:
+1000 panoramic (800/100/100) 
+
+Augmentation: 
+Train sete L/R Flip
+
+Evaluation için: 
+Mandibular dışını maskeleyeceğiz. Hem metrik hesabı, hem de doktor testlerinde.  
+-SSIM metriği hesaplayalım.  Lezyonlu/Lezyonsuz generator ile gerçek görüntü arasında.
+-Rastgele karıştırıp diş hekimine hangisi gerçek hangisi fake. Sırayla mı/yanyana mı? (Sırayla yapalım)
+-Hekime lezyon var mı? İşaretletmek.
+Başka ne metrik kullanılıyor?
+Karşılaştırmak için labeldan panoramic üreten alternatif model var mı literatürde?
+
+
+
