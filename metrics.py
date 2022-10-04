@@ -15,7 +15,7 @@ import sys
 import cv2
 import os
 from inception import *
-
+import pandas as pd
 
 
 
@@ -75,8 +75,8 @@ class GauaganMetrics():
               x=data_list[i,:,:,:]
               x=np.reshape(x,(1,x.shape[0],x.shape[1],x.shape[2]))
               if self.noise_mode=="3D":
-                latent_vector=tf.random.normal(shape=(1,self.gaugan_model.image_size *2*self.gaugan_model.image_size*self.gaugan_model.latent_dim),dtype=tf.float32)
-                latent_vector=tf.reshape(latent_vector,(1, self.gaugan_model.image_size*2,self.gaugan_model.image_size,self.gaugan_model.latent_dim))
+                latent_vector=tf.random.normal(shape=(1,self.gaugan_model.image_size *self.gaugan_model.image_size*self.gaugan_model.latent_dim),dtype=tf.float32)
+                latent_vector=tf.reshape(latent_vector,(1, self.gaugan_model.image_size,self.gaugan_model.image_size,self.gaugan_model.latent_dim))
                 model_name="oasis"
               elif self.noise_mode=="1D":
                 latent_vector=tf.random.normal(shape=(1,self.gaugan_model.latent_dim),dtype=tf.float32)
@@ -88,7 +88,11 @@ class GauaganMetrics():
               predict_list.append(predict[-1])
               if self.save_path!=None:
                 fake_img=np.uint8((predict[-1]*127.5)+127.5)
+                fake_img=cv2.resize(fake_img, (512, 256), interpolation= cv2.INTER_LANCZOS4)
+                fake_img = cv2.fastNlMeansDenoisingColored(fake_img,None,3,3,7,5)
                 real_img=np.uint8((self.images[i]*127.5)+127.5)
+                real_img=cv2.resize(real_img, (512, 256), interpolation= cv2.INTER_LANCZOS4)
+
                 cv2.imwrite(os.path.join(self.real_save_path,(str(i)+"_{}_real.png".format(model_name))),real_img)
                 cv2.imwrite(os.path.join(self.fake_save_path,(str(i)+"_{}fake.png".format(model_name))),fake_img)
 
@@ -173,6 +177,13 @@ class GauaganMetrics():
               res_list.append(img)
           return np.asarray(res_list)
 
+      def save_ssim(self,loss_ssim,name):
+          ssim=list(loss_ssim.numpy())
+          df=pd.DataFrame(data={"ssim":ssim})
+          path=os.path.join(self.save_path,"{}_results_ssim.csv".format(name))
+          df.to_csv(path, index=False)
+
+
       def get_metrics_score(self,mask_apply=True):
           ground_truth=np.asarray(self.images)
 
@@ -181,9 +192,11 @@ class GauaganMetrics():
             x_generated_images=self.make_threshold(generated_images)
             x_ground_truth=self.make_threshold(ground_truth)
             print("Masks Applied")
+            ssim_name="maskapplied"
           else:
             x_generated_images=self.convert_uint8(generated_images)
             x_ground_truth=self.convert_uint8(ground_truth)
+            ssim_name="nomask"
 
 
           print('Prepared', x_ground_truth.shape, x_generated_images.shape)
@@ -194,10 +207,11 @@ class GauaganMetrics():
 
           # fid between images1 and images2
           self.fid = self.calculate_fid(images1, images2)
-          self.loss_ssim = tf.reduce_mean(tf.image.ssim(x_ground_truth, x_generated_images ,max_val=255, filter_size=11,
-                                    filter_sigma=1.5, k1=0.01, k2=0.03))
+          self.loss_ssim = tf.image.ssim(x_ground_truth, x_generated_images ,max_val=255, filter_size=11,
+                                    filter_sigma=1.5, k1=0.01, k2=0.03)
+          self.save_ssim(self.loss_ssim,ssim_name)
           print("------------------------------------\n")
           print('FID (different): %.3f' % self.fid)
           print("------------------------------------\n")
-          print("Structre Similiratiy : " ,self.loss_ssim.numpy())
+          print("Structre Similiratiy : " ,tf.reduce_mean(self.loss_ssim).numpy())
 

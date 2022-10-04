@@ -25,7 +25,7 @@ class NOISE3D(layers.Layer):
 
     def call(self,latent,masks):
         x=tf.concat([latent,masks],axis=-1)
-        x=tf.image.resize(x, (self.targeted_shape*2,self.targeted_shape), method="bilinear")
+        x=tf.image.resize(x, (self.targeted_shape,self.targeted_shape), method="bilinear")
         x=self.conv1(x)
         return x
 

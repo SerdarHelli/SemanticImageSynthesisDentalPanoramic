@@ -36,8 +36,8 @@ class OASISGauGAN(keras.Model):
         self.latent_dim = latent_dim
         self.batch_size = batch_size
         self.num_classes = num_classes
-        self.image_shape = (image_size*2, image_size, 3)
-        self.mask_shape = (image_size*2, image_size, num_classes)
+        self.image_shape = (image_size, image_size, 3)
+        self.mask_shape = (image_size, image_size, num_classes)
         self.vgg_feature_loss_coeff = vgg_feature_loss_coeff
         self.gen_lr=gen_lr
         self.disc_lr=disc_lr
@@ -173,8 +173,8 @@ class OASISGauGAN(keras.Model):
 
     def train_step(self, data):
         image, _, _,labels = data
-        latent_vector=tf.random.normal(shape=( self.batch_size,self.image_size*2*self.image_size*self.latent_dim),dtype=tf.float32)
-        latent_vector=tf.reshape(latent_vector,(self.batch_size, self.image_size*2,self.image_size,self.latent_dim))
+        latent_vector=tf.random.normal(shape=( self.batch_size,self.image_size*self.image_size*self.latent_dim),dtype=tf.float32)
+        latent_vector=tf.reshape(latent_vector,(self.batch_size, self.image_size,self.image_size,self.latent_dim))
 
         discriminator_loss,fake_images = self.train_discriminator(
             latent_vector, image,labels)
@@ -199,8 +199,8 @@ class OASISGauGAN(keras.Model):
         image, _, _,labels = data
         # Obtain the learned moments of the real image distribution.
         # Sample a latent from the distribution defined by the learned moments.
-        latent_vector=tf.random.normal(shape=( self.batch_size,self.image_size*2*self.image_size*self.latent_dim),dtype=tf.float32)
-        latent_vector=tf.reshape(latent_vector,(self.batch_size, self.image_size*2,self.image_size,self.latent_dim))
+        latent_vector=tf.random.normal(shape=( self.batch_size,self.image_size*self.image_size*self.latent_dim),dtype=tf.float32)
+        latent_vector=tf.reshape(latent_vector,(self.batch_size, self.image_size,self.image_size,self.latent_dim))
 
         # Generate the fake images.
         fake_images = self.generator([latent_vector, labels])
@@ -273,8 +273,8 @@ class GauGAN(keras.Model):
         self.latent_dim = latent_dim
         self.batch_size = batch_size
         self.num_classes = num_classes
-        self.image_shape = (image_size*2, image_size, 3)
-        self.mask_shape = (image_size*2, image_size, num_classes)
+        self.image_shape = (image_size, image_size, 3)
+        self.mask_shape = (image_size, image_size, num_classes)
         self.feature_loss_coeff = feature_loss_coeff
         self.vgg_feature_loss_coeff = vgg_feature_loss_coeff
         self.kl_divergence_loss_coeff = kl_divergence_loss_coeff

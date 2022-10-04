@@ -49,8 +49,8 @@ def build_generator(mask_shape, latent_dim=256):
 
     latent = keras.Input(shape=(latent_dim))
     mask = keras.Input(shape=mask_shape)
-    x = layers.Dense(16384*2)(latent)
-    x = layers.Reshape((8, 4, 1024))(x)
+    x = layers.Dense(16384)(latent)
+    x = layers.Reshape((4, 4, 1024))(x)
     
     x = ResBlock(filters=1024)(x, mask)
     x = layers.UpSampling2D((2, 2))(x)
