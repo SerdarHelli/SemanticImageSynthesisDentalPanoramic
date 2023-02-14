@@ -10,7 +10,7 @@ scipy==1.7.3
 setuptools-git==1.2
 tensorboard==2.8.0
 tensorboard-plugin-wit==1.8.1
-tensorflow==2.8.2+zzzcolab20220719082949
+tensorflow==2.8.2
 tensorflow-addons==0.17.1
 natsort==5.5.0
 Pillow==7.1.2

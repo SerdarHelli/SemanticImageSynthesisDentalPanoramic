@@ -88,16 +88,15 @@ gaugan.compile(usage="eval")
 
 
 test_generator=DataGenerator(file_path=args["test_data_path"],batch_size=args["batch_size"],
-                              img_dim=args["img_size"],data_flip=False,shuffle=False,with_abnormality=args["include_abnormality"])
+                              img_dim=args["img_size"],data_flip=False,shuffle=False,with_abnormality=args["include_abnormality"],return_filesname=True)
 
 save_path_test=os.path.join(args["logs_path"],"test_results")
 if not os.path.isdir(save_path_test):
     os.makedirs(save_path_test)
 
-print("Test Evolution....\n")
+print("Test Evaluation....\n")
 metrics_test=GauaganMetrics(gaugan,test_generator,save_path=save_path_test,noise_mode=noise_mode,labels_mode="one_hot",inception_mode=args["inception_mode"])
 print("Test Eval :\n ")
 print("------------------------------------\n")
+#Mask Applied For Fisher Exact Test
 metrics_test.get_metrics_score(mask_apply=True)
-print("No Applied Mask\n")
-metrics_test.get_metrics_score(mask_apply=False)

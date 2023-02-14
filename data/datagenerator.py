@@ -33,7 +33,7 @@ def convert_tobgr(img):
 
 
 class DataGenerator():
-    def __init__(self, file_path,batch_size,img_dim=256,data_flip=True,shuffle=True,with_abnormality=True):
+    def __init__(self, file_path,batch_size,img_dim=256,data_flip=True,shuffle=True,with_abnormality=True,return_filesname=False):
         self.batch_size=batch_size
         self.data_path = file_path
         self.segm_zippath=os.path.join(file_path, "Segmentation.zip")
@@ -47,7 +47,7 @@ class DataGenerator():
         self.path_label_teeth=os.path.join(file_path, "Segmentation/teeth_mask")
         self.path_label_mandibular=os.path.join(file_path, "Segmentation/maxillomandibular")
         self.path_label_abnormal=os.path.join(file_path, "Expert/mask")
-
+        self.return_filesname=return_filesname
 
         missing_data_error="Check your data path . It needs zips files or their folder of the data."  
         if not os.path.isdir(file_path):
@@ -153,7 +153,7 @@ class DataGenerator():
         segmentationmaps=[]
         categoricallabelmaps=[]
         labels=[]
-        org_img_shapes=[]
+        img_names=[]
         for i in range(len(files_names)):
 
             path_img=os.path.join(self.path_img,files_names[i].upper())
@@ -170,6 +170,7 @@ class DataGenerator():
             segmentation_map=self.make_segmentationmap(categorical_map)
             segmentationmaps.append(segmentation_map)
             label=np.concatenate((teeth, mandibular),axis=2)
+            img_names.append(files_names[i])
 
             if self.with_abnormality:
               label=np.concatenate((label,abnormal),axis=2)
@@ -183,9 +184,14 @@ class DataGenerator():
               categoricallabelmaps.append(flipped_categoricallabelmap)
               segmentationmaps.append(flipped_segmentationmap)
               labels.append(flipped_label)
+              img_names.append(files_names[i])
 
 
-        dataset=tf.data.Dataset.from_tensor_slices((images,segmentationmaps,labels,categoricallabelmaps)).batch(self.batch_size)
+        if self.return_filesname:
+            dataset=tf.data.Dataset.from_tensor_slices((images,segmentationmaps,labels,categoricallabelmaps,img_names)).batch(self.batch_size)
+        else: 
+            dataset=tf.data.Dataset.from_tensor_slices((images,segmentationmaps,labels,categoricallabelmaps)).batch(self.batch_size)
+            
 
         if self.shuffle:
           dataset=dataset.shuffle(200)
